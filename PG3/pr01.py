@@ -46,6 +46,10 @@ class Board:
 
     def on_click(self, cell_coords):
         if cell_coords:
+            for row in range(self.height):
+                self.board[row][cell_coords[0]] = (self.board[row][cell_coords[0]] + 1) % 2
+            for col in range(self.width):
+                self.board[cell_coords[1]][col] = (self.board[cell_coords[1]][col] + 1) % 2
             self.board[cell_coords[1]][cell_coords[0]] = (self.board[cell_coords[1]][cell_coords[0]] + 1) % 2
 
 
