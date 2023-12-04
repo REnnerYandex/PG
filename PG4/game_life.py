@@ -59,6 +59,7 @@ class Life(Board):
     def __init__(self, width=10, height=10):
         super().__init__(width, height)
         self.board = [[1 if random.random() < 0.1 else 0 for _ in range(width)] for _ in range(height)]
+        # self.board = [[0 for _ in range(width)] for _ in range(height)]
 
     def next_move(self):
         board_next = [[0] * self.width for _ in range(self.height)]
@@ -74,6 +75,9 @@ class Life(Board):
                     board_next[row][col] = 1
         self.board = copy.deepcopy(board_next)
 
+    def on_click(self, cell_coords):
+        if cell_coords:
+            self.board[cell_coords[1]][cell_coords[0]] = (self.board[cell_coords[1]][cell_coords[0]] + 1) % 2
 
 
 if __name__ == '__main__':
@@ -87,15 +91,26 @@ if __name__ == '__main__':
     running = True
     fps = 30
     clock = pygame.time.Clock()
+    gaming = True
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
-            if event.type == pygame.MOUSEBUTTONDOWN:
+            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 4:  # ускорить
+                if fps < 40:
+                    fps += 1
+            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 5:  # замедлить
+                if fps > 1:
+                    fps -= 1
+            if (event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE or
+                    event.type == pygame.MOUSEBUTTONDOWN and event.button == 3):  # пауза
+                gaming = not gaming
+            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and not gaming:  # расстановка клеток
                 game_life.get_click(event.pos)
 
         screen.fill((0, 0, 0))
-        game_life.next_move()
+        if gaming:
+            game_life.next_move()
         game_life.render(screen)
         clock.tick(fps)
         pygame.display.flip()
